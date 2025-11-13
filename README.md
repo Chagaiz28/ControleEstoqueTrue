@@ -6,10 +6,9 @@ Um sistema completo de gerenciamento de estoque com frontend React e backend Exp
 
 - **Frontend**: Interface React moderna e responsiva
 - **Backend**: API REST completa com Express.js
-- **Banco de Dados**: PostgreSQL com relações N-M e N-1
+- **Banco de Dados**: PostgreSQL
 - **Docker**: Aplicação totalmente containerizada
 - **CORS**: Configurado para segurança
-- **Documentação**: README com boas práticas
 
 ## Requisitos Atendidos
 
@@ -20,7 +19,6 @@ Um sistema completo de gerenciamento de estoque com frontend React e backend Exp
 ✅ Relação N-M: pedidos ← pedido_itens → produtos
 ✅ Relação N-1: produtos → categorias, pedidos → fornecedores
 ✅ CORS configurado no backend
-✅ README com explicação de execução e boas práticas
 
 ## Arquitetura do Banco de Dados
 

@@ -6,14 +6,22 @@ require("dotenv").config()
 
 const app = express()
 
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-)
+const allowedOrigins = [
+  "http://localhost:3000", // quando testa local
+  "http://frontend:3000",   // dentro da rede docker
+];
+
+app.use(cors({
+  origin: function(origin, callback){
+    // permitir requisições sem origin (ex: Postman)
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      const msg = `O CORS para ${origin} não está permitido`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+}));
 
 
 app.use(bodyParser.json())

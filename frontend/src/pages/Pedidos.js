@@ -34,7 +34,7 @@ function Pedidos() {
   const fetchPedidos = async () => {
     try {
       const res = await axios.get(`${API_BASE}/pedidos`)
-      setPedidos(res.data)
+      setPedidos(Array.isArray(res.data) ? res.data : [])
       setError("")
     } catch (err) {
       setError("Erro ao carregar pedidos")
@@ -44,7 +44,7 @@ function Pedidos() {
   const fetchProdutos = async () => {
     try {
       const res = await axios.get(`${API_BASE}/produtos`)
-      setProdutos(res.data)
+      setProdutos(Array.isArray(res.data) ? res.data : [])
     } catch (err) {
       console.error("Erro ao carregar produtos")
     }
@@ -53,7 +53,7 @@ function Pedidos() {
   const fetchFornecedores = async () => {
     try {
       const res = await axios.get(`${API_BASE}/fornecedores`)
-      setFornecedores(res.data)
+      setFornecedores(Array.isArray(res.data) ? res.data : [])
     } catch (err) {
       console.error("Erro ao carregar fornecedores")
     }
@@ -62,7 +62,7 @@ function Pedidos() {
   const fetchPedidoItens = async (pedidoId) => {
     try {
       const res = await axios.get(`${API_BASE}/pedidos/${pedidoId}/itens`)
-      setPedidoItens(res.data)
+      setPedidoItens(Array.isArray(res.data) ? res.data : [])
     } catch (err) {
       console.error("Erro ao carregar itens do pedido")
     }
@@ -174,11 +174,11 @@ function Pedidos() {
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((pedido) => (
+          {(Array.isArray(pedidos) ? pedidos : []).map((pedido) => (
             <tr key={pedido.id}>
               <td>{pedido.id}</td>
               <td>{pedido.fornecedor_nome}</td>
-              <td>{new Date(pedido.data_pedido).toLocaleDateString()}</td>
+              <td>{pedido.data_pedido ? new Date(pedido.data_pedido).toLocaleDateString() : ""}</td>
               <td>{pedido.status}</td>
               <td>
                 <button className="button" onClick={() => openItensModal(pedido.id)}>
@@ -210,7 +210,7 @@ function Pedidos() {
                   required
                 >
                   <option value="">Selecione um fornecedor</option>
-                  {fornecedores.map((forn) => (
+                  {(Array.isArray(fornecedores) ? fornecedores : []).map((forn) => (
                     <option key={forn.id} value={forn.id}>
                       {forn.nome}
                     </option>
@@ -220,7 +220,10 @@ function Pedidos() {
 
               <div className="form-group">
                 <label>Status</label>
-                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                >
                   <option value="pendente">Pendente</option>
                   <option value="entregue">Entregue</option>
                   <option value="cancelado">Cancelado</option>
@@ -255,13 +258,16 @@ function Pedidos() {
                 </tr>
               </thead>
               <tbody>
-                {pedidoItens.map((item) => (
+                {(Array.isArray(pedidoItens) ? pedidoItens : []).map((item) => (
                   <tr key={item.id}>
                     <td>{item.produto_nome}</td>
                     <td>{item.quantidade}</td>
                     <td>R$ {Number.parseFloat(item.preco).toFixed(2)}</td>
                     <td>
-                      <button className="button danger" onClick={() => handleDeleteItem(selectedPedidoId, item.id)}>
+                      <button
+                        className="button danger"
+                        onClick={() => handleDeleteItem(selectedPedidoId, item.id)}
+                      >
                         Remover
                       </button>
                     </td>
@@ -278,7 +284,7 @@ function Pedidos() {
                   onChange={(e) => setItemData({ ...itemData, produto_id: e.target.value })}
                 >
                   <option value="">Selecione um produto</option>
-                  {produtos.map((prod) => (
+                  {(Array.isArray(produtos) ? produtos : []).map((prod) => (
                     <option key={prod.id} value={prod.id}>
                       {prod.nome}
                     </option>
