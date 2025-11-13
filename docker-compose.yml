@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: estoque-db
+    environment:
+      POSTGRES_USER: estoque
+      POSTGRES_PASSWORD: estoque123
+      POSTGRES_DB: estoque_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - estoque-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estoque"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: estoque-backend
+    environment:
+      DB_USER: estoque
+      DB_PASSWORD: estoque123
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: estoque_db
+      NODE_ENV: production
+      PORT: 5000
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - estoque-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: estoque-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - estoque-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  estoque-network:
+    driver: bridge
